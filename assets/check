@@ -22,6 +22,7 @@ branch=$(jq -r '.source.branch // ""' < $payload)
 paths="$(jq -r '(.source.paths // ["."])[]' < $payload)" # those "'s are important
 ignore_paths="$(jq -r '":!" + (.source.ignore_paths // [])[]' < $payload)" # these ones too
 ref=$(jq -r '.version.ref // ""' < $payload)
+git_ignore_ssl=$(jq -r '.source.git_ignore_ssl // false' < $payload)
 
 destination=$TMPDIR/git-resource-repo-cache
 
@@ -34,8 +35,11 @@ else
   if [ -n "$branch" ]; then
     branchflag="--branch $branch"
   fi
-
-  git clone $uri $branchflag $destination
+  sslVerify=""
+  if [ "$git_ignore_ssl" = "true" ]; then
+    sslVerify="--config http.sslVerify=false"
+  fi
+  git clone $uri $branchflag $sslVerify $destination
   cd $destination
 fi
 

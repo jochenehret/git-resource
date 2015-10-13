@@ -212,6 +212,23 @@ check_uri_from_paths_ignoring() {
   }" | ${resource_dir}/check | tee /dev/stderr
 }
 
+check_ignore_git_ssl_default() {
+  jq -n "{
+    source: {
+      uri: $(echo $1 | jq -R .)
+    }
+  }" | ${resource_dir}/check | tee /dev/stderr
+}
+
+check_ignore_git_ssl_true() {
+  jq -n "{
+    source: {
+      uri: $(echo $1 | jq -R .),
+      git_ignore_ssl: "true"
+    }
+  }" | ${resource_dir}/check | tee /dev/stderr
+}
+
 get_uri() {
   jq -n "{
     source: {
@@ -238,6 +255,23 @@ get_uri_at_branch() {
       branch: $(echo $2 | jq -R .)
     }
   }" | ${resource_dir}/in "$3" | tee /dev/stderr
+}
+
+get_uri_ignore_git_ssl_default () {
+  jq -n "{
+    source: {
+      uri: $(echo $1 | jq -R .)
+    }
+  }" | ${resource_dir}/in "$2" | tee /dev/stderr
+}
+
+get_uri_ignore_git_ssl_true () {
+  jq -n "{
+    source: {
+      uri: $(echo $1 | jq -R .),
+      git_ignore_ssl: "true"
+    }
+  }" | ${resource_dir}/in "$2" | tee /dev/stderr
 }
 
 put_uri() {

@@ -234,6 +234,24 @@ it_can_check_from_head_with_empty_commits() {
   "
 }
 
+it_can_check_with_git_ignore_flag_default() {
+  local repo=$(init_repo)
+
+  check_ignore_git_ssl_default $repo
+
+  cd "$TMPDIR/git-resource-repo-cache"
+  [ -z "$(git config --get http.sslVerify)" ]
+}
+
+it_can_check_with_git_ignore_flag_true() {
+  local repo=$(init_repo)
+
+  check_ignore_git_ssl_true $repo
+
+  cd "$TMPDIR/git-resource-repo-cache"
+  [[ $(git config --get http.sslVerify) == "false" ]]
+}
+
 run it_can_check_from_head
 run it_can_check_from_a_ref
 run it_can_check_from_a_bogus_sha
@@ -245,3 +263,5 @@ run it_skips_marked_commits
 run it_skips_marked_commits_with_no_version
 run it_fails_if_key_has_password
 run it_can_check_empty_commits
+run it_can_check_with_git_ignore_flag_default
+run it_can_check_with_git_ignore_flag_true
