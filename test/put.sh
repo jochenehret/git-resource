@@ -185,9 +185,37 @@ it_can_put_to_url_with_rebase_with_tag_and_prefix() {
   test "$(git -C $repo1 rev-parse v1.0)" = $rebased_ref
 }
 
+it_can_put_with_git_ignore_ssl_default() {
+  local repo1=$(init_repo)
+
+  local src=$(mktemp -d $TMPDIR/put-src.XXXXXX)
+  local repo2=$src/repo
+  git clone $repo1 $repo2
+  unset_http_ssl_verify
+
+  put_uri_ignore_git_ssl_default $repo1 $src repo
+
+  [ -z "$(git config --global --get http.sslVerify)" ]
+}
+
+it_can_put_with_git_ignore_ssl_true() {
+  local repo1=$(init_repo)
+
+  local src=$(mktemp -d $TMPDIR/put-src.XXXXXX)
+  local repo2=$src/repo
+  git clone $repo1 $repo2
+  unset_http_ssl_verify
+
+  put_uri_ignore_git_ssl_true $repo1 $src repo
+  
+  [[ $(git config --global --get http.sslVerify) == "false" ]]
+}
+
 run it_can_put_to_url
 run it_can_put_to_url_with_tag
 run it_can_put_to_url_with_tag_and_prefix
 run it_can_put_to_url_with_rebase
 run it_can_put_to_url_with_rebase_with_tag
 run it_can_put_to_url_with_rebase_with_tag_and_prefix
+run it_can_put_with_git_ignore_ssl_default
+run it_can_put_with_git_ignore_ssl_true

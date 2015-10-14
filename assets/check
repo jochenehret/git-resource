@@ -22,8 +22,13 @@ branch=$(jq -r '.source.branch // ""' < $payload)
 paths="$(jq -r '(.source.paths // ["."])[]' < $payload)" # those "'s are important
 ignore_paths="$(jq -r '":!" + (.source.ignore_paths // [])[]' < $payload)" # these ones too
 ref=$(jq -r '.version.ref // ""' < $payload)
+git_ignore_ssl=$(jq -r '.source.git_ignore_ssl // false' < $payload)
 
 destination=$TMPDIR/git-resource-repo-cache
+
+if [ "$git_ignore_ssl" = "true" ]; then
+  git config --global http.sslVerify false
+fi
 
 if [ -d $destination ]; then
   cd $destination

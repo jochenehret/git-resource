@@ -65,6 +65,28 @@ it_can_get_from_url_at_branch() {
   test "$(git -C $dest rev-parse HEAD)" = $ref2
 }
 
+it_can_get_with_git_ignore_ssl_default() {
+  local repo=$(init_repo)
+  local dest=$TMPDIR/destination
+  unset_http_ssl_verify
+
+  get_uri_ignore_git_ssl_default $repo $dest
+
+  [ -z "$(git config --global --get http.sslVerify)" ]
+}
+
+it_can_get_with_git_ignore_ssl_true() {
+  local repo=$(init_repo)
+  local dest=$TMPDIR/destination
+  unset_http_ssl_verify
+
+  get_uri_ignore_git_ssl_true $repo $dest
+
+  [[ $(git config --global --get http.sslVerify) == "false" ]]
+}
+
 run it_can_get_from_url
 run it_can_get_from_url_at_ref
 run it_can_get_from_url_at_branch
+run it_can_get_with_git_ignore_ssl_default
+run it_can_get_with_git_ignore_ssl_true

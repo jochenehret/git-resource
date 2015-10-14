@@ -30,6 +30,7 @@ ref=$(jq -r '.version.ref // "HEAD"' < $payload)
 depth=$(jq -r '(.params.depth // 0)' < $payload)
 fetch=$(jq -r '(.params.fetch // [])[]' < $payload)
 submodules=$(jq -r '(.params.submodules // "all")' < $payload)
+git_ignore_ssl=$(jq -r '.source.git_ignore_ssl // false' < $payload)
 
 if [ -z "$uri" ]; then
   echo "invalid payload (missing uri):" >&2
@@ -45,6 +46,10 @@ fi
 depthflag=""
 if test "$depth" -gt 0 2> /dev/null; then
   depthflag="--depth $depth"
+fi
+
+if [ "$git_ignore_ssl" = "true" ]; then
+  git config --global http.sslVerify false
 fi
 
 git clone $depthflag $uri $branchflag $destination

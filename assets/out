@@ -30,6 +30,7 @@ repository=$(jq -r '.params.repository // ""' < $payload)
 tag=$(jq -r '.params.tag // ""' < $payload)
 tag_prefix=$(jq -r '.params.tag_prefix // ""' < $payload)
 rebase=$(jq -r '.params.rebase // false' < $payload)
+git_ignore_ssl=$(jq -r '.source.git_ignore_ssl // false' < $payload)
 
 if [ -z "$uri" ]; then
   echo "invalid payload (missing uri)"
@@ -51,6 +52,10 @@ cd $source
 if [ -n "$tag" ] && [ ! -f "$tag" ]; then
   echo "tag file '$tag' does not exist"
   exit 1
+fi
+
+if [ "$git_ignore_ssl" = "true" ]; then
+  git config --global http.sslVerify false
 fi
 
 tag_name=""
